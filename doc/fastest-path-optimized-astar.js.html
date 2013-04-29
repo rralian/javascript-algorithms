@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>fastest-path-optimized-astar.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "fastest-path-optimized-astar.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>fastest-path-optimized-astar.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>This is a javascript implementation of the a-star algorithm. As you step 
+through the maze, you keep track of the optimal score of each unexplored 
+node. The score is the sum of how the best path to that node, and the 
+ideal path to the goal. At each step, you review the scores of each 
+unexplored node and follow the path to the unexplored node with the 
+lowest score. This is guaranteed to find the shortest path while optimally 
+exploring the fewest paths.</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>A representation of the grid as an array of arrays, with passable nodes as
+'1' and impassable nodes as '0'. e.g., The four corners would look like:</p>
+  </div>
+  <div class="body"><ul>
+<li>(nw) grid[0,0] // 1</li>
+<li>(ne) grid[0,5] // 0</li>
+<li>(se) grid[5,5] // 1</li>
+<li>(sw) grid[5,0] // 1</li>
+</ul>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">grid</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="p">];</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Get all possible next moves from a given node.</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array}   node   starting node, e.g., [0,3]</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array}          array of nodes, e.g., [[0,2],[0,4],[1,3]]</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">getValidSteps</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">node</span><span class="p">){</span>
+  <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+      <span class="nx">y</span> <span class="o">=</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+      <span class="nx">steps</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="nx">y</span><span class="p">])</span> <span class="nx">steps</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nx">y</span><span class="p">]);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="nx">y</span><span class="p">])</span> <span class="nx">steps</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="nx">y</span><span class="p">]);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="nx">y</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="nx">steps</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="o">-</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="nx">y</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="nx">steps</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="o">+</span><span class="mi">1</span><span class="p">]);</span>
+  <span class="k">return</span> <span class="nx">steps</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Find the shortest possible distance from node to goal</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array}   node the node we are testing</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">integer</span>
+      <span>the sum of the differences between x and y coords</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">getFromGoal</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">node</span><span class="p">){</span>
+  <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="nx">goal</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">abs</span><span class="p">(</span><span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="nx">goal</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+<span class="p">};</span>
+
+
+<span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="nx">goal</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">];</span>
+
+<span class="kd">var</span> <span class="nx">findPath</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span> <span class="nx">goal</span><span class="p">){</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>sort from high to low, so we can pop the lowest. standard js sort algorithm</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">var</span> <span class="nx">sortNodes</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span><span class="nx">b</span><span class="p">){</span>
+    <span class="nx">aStr</span> <span class="o">=</span> <span class="nx">a</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+    <span class="nx">bStr</span> <span class="o">=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">combinedScore</span><span class="p">[</span><span class="nx">bStr</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nx">combinedScore</span><span class="p">[</span><span class="nx">aStr</span><span class="p">]){</span>
+      <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span><span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">combinedScore</span><span class="p">[</span><span class="nx">bStr</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nx">combinedScore</span><span class="p">[</span><span class="nx">aStr</span><span class="p">]){</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>build the solution path as an array</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array} node [description]</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span class="dox_type">[type]</span>
+      <span>[description]</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+  <span class="kd">var</span> <span class="nx">walkPath</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">node</span><span class="p">){</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">confirm</span><span class="p">(</span><span class="s1">&#39;walk path?&#39;</span><span class="p">))</span> <span class="k">return</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">[</span><span class="nx">node</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">getNext</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">currNode</span><span class="p">){</span>
+      <span class="kd">var</span> <span class="nx">nodeStr</span> <span class="o">=</span> <span class="nx">currNode</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span>
+          <span class="nx">nextNode</span> <span class="o">=</span> <span class="nx">fromNode</span><span class="p">[</span><span class="nx">nodeStr</span><span class="p">];</span>
+          <span class="k">if</span><span class="p">(</span><span class="nx">nextNode</span><span class="p">){</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;nextNode&#39;</span><span class="p">,</span> <span class="nx">nextNode</span><span class="p">);</span>
+            <span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nx">confirm</span><span class="p">(</span><span class="s1">&#39;nextNode?&#39;</span><span class="p">))</span> <span class="k">return</span><span class="p">;</span>
+            <span class="nx">result</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">nextNode</span><span class="p">);</span>
+            <span class="nx">getNext</span><span class="p">(</span><span class="nx">nextNode</span><span class="p">);</span>
+          <span class="p">}</span>
+    <span class="p">};</span>
+    <span class="nx">getNext</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">result</span><span class="p">.</span><span class="nx">reverse</span><span class="p">();</span>
+  <span class="p">};</span>
+
+  <span class="kd">var</span> <span class="nx">nodeStr</span> <span class="o">=</span> <span class="nx">start</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span>
+  <span class="nx">explored</span> <span class="o">=</span> <span class="p">[],</span>
+  <span class="nx">possibles</span> <span class="o">=</span> <span class="p">[</span><span class="nx">start</span><span class="p">],</span> <span class="c1">// array to keep track of possible steps to explore</span>
+  <span class="nx">fromNode</span> <span class="o">=</span> <span class="p">{},</span>
+  <span class="nx">combinedScore</span> <span class="o">=</span> <span class="p">{},</span>
+  <span class="nx">fromStart</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;0,0&#39;</span><span class="o">:</span> <span class="mi">0</span><span class="p">},</span>
+  <span class="nx">fromGoal</span> <span class="o">=</span> <span class="p">{},</span>
+  <span class="nx">current</span><span class="p">,</span>
+  <span class="nx">currStr</span><span class="p">,</span>
+  <span class="nx">nextSteps</span><span class="p">,</span>
+  <span class="nx">step</span><span class="p">,</span>
+  <span class="nx">stepStr</span><span class="p">,</span>
+  <span class="nx">i</span><span class="p">;</span>
+
+  <span class="k">while</span><span class="p">(</span><span class="nx">possibles</span><span class="p">.</span><span class="nx">length</span><span class="p">){</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>if(!confirm('keep going?')) return;
+sort and find the next best step</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">possibles</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="nx">sortNodes</span><span class="p">);</span>
+    <span class="nx">current</span> <span class="o">=</span> <span class="nx">possibles</span><span class="p">.</span><span class="nx">pop</span><span class="p">();</span>
+    <span class="nx">currStr</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+
+    <span class="nx">fromGoal</span><span class="p">[</span><span class="nx">currStr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fromGoal</span><span class="p">[</span><span class="nx">currStr</span><span class="p">]</span> <span class="o">||</span> <span class="nx">getFromGoal</span><span class="p">(</span><span class="nx">current</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">fromGoal</span><span class="p">[</span><span class="nx">currStr</span><span class="p">]){</span>
+      <span class="k">return</span> <span class="nx">walkPath</span><span class="p">(</span><span class="nx">current</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nx">currFromStart</span> <span class="o">=</span> <span class="nx">fromStart</span><span class="p">[</span><span class="nx">current</span><span class="p">]</span> <span class="o">||</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="nx">nextSteps</span> <span class="o">=</span> <span class="nx">getValidSteps</span><span class="p">(</span><span class="nx">current</span><span class="p">);</span>
+
+    <span class="k">for</span><span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">nextSteps</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+      <span class="nx">step</span> <span class="o">=</span> <span class="nx">nextSteps</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+      <span class="nx">stepStr</span> <span class="o">=</span> <span class="nx">step</span><span class="p">.</span><span class="nx">toString</span><span class="p">();</span>
+      <span class="k">if</span><span class="p">((</span><span class="k">typeof</span> <span class="nx">fromStart</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">]</span> <span class="o">===</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="o">||</span> <span class="nx">fromStart</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">]</span><span class="o">&gt;</span><span class="nx">currFromStart</span><span class="o">+</span><span class="mi">1</span><span class="p">){</span>
+        <span class="nx">fromStart</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">currFromStart</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span>
+        <span class="nx">fromNode</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">current</span><span class="p">;</span>
+        <span class="nx">fromGoal</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fromGoal</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">]</span> <span class="o">||</span> <span class="nx">getFromGoal</span><span class="p">(</span><span class="nx">step</span><span class="p">);</span>
+        <span class="nx">combinedScore</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">]</span> <span class="o">=</span> <span class="nx">fromStart</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">]</span> <span class="o">+</span> <span class="nx">fromGoal</span><span class="p">[</span><span class="nx">stepStr</span><span class="p">];</span>
+        <span class="nx">possibles</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">step</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">solution</span> <span class="o">=</span> <span class="nx">findPath</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span> <span class="nx">goal</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">solution</span><span class="p">);</span>
+<span class="p">}());</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>

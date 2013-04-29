@@ -1,1 +1,1 @@
-var tree={"files":["any-port-in-a-storm.js","best-path-non-optimized.js","non-optimized-maze.js"]};
+var tree={"files":["any-path-maze.js","any-port-in-a-storm.js","best-path-non-optimized.js","fastest-path-optimized-astar.js"]};
