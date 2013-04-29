@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>any-port-in-a-storm.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" media="all" href="doc-style.css" />
+  <script src="doc-filelist.js"></script>
+  <script>
+    var relativeDir = "", thisFile = "any-port-in-a-storm.js", defaultSidebar = true;
+  </script>
+  <script src="doc-script.js"></script>
+</head>
+<body>
+  <div id="sidebar_wrapper">
+    <div id="sidebar_switch">
+      <span class="tree">Files</span>
+      <span class="headings">Headings</span>
+    </div>
+    <div id="tree"></div>
+    <div id="headings">
+    </div>
+  </div>
+  <div id="sidebar-toggle"></div>
+  <div id="container"><div class="background highlight"></div>
+<table cellpadding="0" cellspacing="0">
+  <tbody>
+      <tr>
+        <td class="docs">
+          <h1>any-port-in-a-storm.js</h1>
+        </td>
+        <td class="code highlight"></td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-1" id="section-1">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>This algorithm is probably what you would do if you were put into a maze
+with no knowledge of its size or arrangement. Just pick right each time
+and mark each square you pass. If you hit a dead-end, back up and take
+another option. When you're out, you're out. Technically this isnt' always
+turning <strong>right</strong> specifically, but it's close enough.</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-2" id="section-2">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>A representation of the grid as an array of arrays, with passable nodes as
+'1' and impassable nodes as '0'. e.g., The four corners would look like:
+    (nw) grid[0,0] // 1
+    (ne) grid[0,5] // 0
+    (se) grid[5,5] // 1
+    (sw) grid[5,0] // 1</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">grid</span> <span class="o">=</span> <span class="p">[</span>
+  <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+  <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+  <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+  <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+  <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+  <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+<span class="p">];</span>
+
+
+<span class="kd">var</span> <span class="nx">start</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+    <span class="nx">goal</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">],</span>
+    <span class="nx">visited</span> <span class="o">=</span> <span class="p">[],</span> <span class="c1">// array to keep track of visited nodes</span>
+    <span class="nx">solution</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nx">iterations</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="c1">// track each pass through the function</span>
+    <span class="nx">startTime</span><span class="p">,</span>
+    <span class="nx">endTime</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-3" id="section-3">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Get all possible next moves from a given node.</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array}   node   starting node, e.g., [0,3]</span>
+    </div>
+    <div class="dox_tag_title">Returns</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array}          array of nodes, e.g., [[0,2],[0,4],[1,3]]</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">getValidSteps</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">node</span><span class="p">){</span>
+    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">node</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="nx">y</span> <span class="o">=</span> <span class="nx">node</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+        <span class="nx">steps</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="nx">y</span><span class="p">])</span> <span class="nx">steps</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">x</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="nx">y</span><span class="p">]);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="nx">y</span><span class="p">])</span> <span class="nx">steps</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="nx">y</span><span class="p">]);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="nx">y</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="nx">steps</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="o">-</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">grid</span><span class="p">[</span><span class="nx">x</span><span class="p">][</span><span class="nx">y</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span> <span class="nx">steps</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="nx">x</span><span class="p">,</span><span class="nx">y</span><span class="o">+</span><span class="mi">1</span><span class="p">]);</span>
+    <span class="k">return</span> <span class="nx">steps</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-4" id="section-4">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>Find the path to goal from a given node. This function stores results
+in the solution variable declared in the parent IIFE and returns nothing.</p>
+  </div>
+  <div class="body">
+  </div>
+  <div class="details">
+    <div class="dox_tag_title">Params</div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array}   node   The node to start from</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array}   goal   The goal node</span>
+    </div>
+    <div class="dox_tag_detail">
+      <span class="dox_tag_name"></span>
+      <span>{array}   path   An array representing all nodes leading to current node</span>
+    </div>
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="kd">var</span> <span class="nx">findPath</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">node</span><span class="p">,</span> <span class="nx">goal</span><span class="p">,</span> <span class="nx">path</span><span class="p">){</span>
+    
+    <span class="nx">iterations</span><span class="o">++</span><span class="p">;</span>
+    
+    <span class="kd">var</span> <span class="nx">nodeStr</span> <span class="o">=</span> <span class="nx">node</span><span class="p">.</span><span class="nx">toString</span><span class="p">(),</span>
+        <span class="nx">stepStr</span><span class="p">,</span>
+        <span class="nx">step</span><span class="p">,</span>
+        <span class="nx">validSteps</span><span class="p">,</span>
+        <span class="nx">i</span><span class="p">,</span>
+        <span class="nx">stepLength</span><span class="p">,</span>
+        <span class="nx">result</span><span class="p">;</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-5" id="section-5">&#182;</a>
+</div>
+<p>if we've already tried this node, skip this</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="k">if</span><span class="p">(</span><span class="nx">visited</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">nodeStr</span><span class="p">)</span><span class="o">&gt;-</span><span class="mi">1</span><span class="p">)</span> <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-6" id="section-6">&#182;</a>
+</div>
+<p>add node to the local path</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">path</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
+    <span class="nx">visited</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">nodeStr</span><span class="p">);</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-7" id="section-7">&#182;</a>
+</div>
+<p>are we at the solution?</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="k">if</span><span class="p">(</span><span class="nx">nodeStr</span><span class="o">===</span><span class="nx">goal</span><span class="p">.</span><span class="nx">toString</span><span class="p">())</span> <span class="k">return</span> <span class="nx">path</span><span class="p">;</span>    
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-8" id="section-8">&#182;</a>
+</div>
+<p>get all valid steps from current node</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="nx">validSteps</span> <span class="o">=</span> <span class="nx">getValidSteps</span><span class="p">(</span><span class="nx">node</span><span class="p">);</span>
+    
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-9" id="section-9">&#182;</a>
+</div>
+<p>loop through valid steps</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="nx">i</span><span class="o">&lt;</span><span class="nx">validSteps</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">){</span>
+        
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-10" id="section-10">&#182;</a>
+</div>
+<div class="dox">
+  <div class="summary"><p>For each valid step, recurse through the function.
+Keep in mind that complex types are passed as pointers
+(by reference), so we need to pass a clone of <code>path</code>,
+hence the <code>.slice(0)</code>.</p>
+  </div>
+  <div class="body">
+  </div>
+</div>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+        <span class="nx">step</span> <span class="o">=</span> <span class="nx">validSteps</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+        <span class="nx">result</span> <span class="o">=</span> <span class="nx">findPath</span><span class="p">(</span><span class="nx">step</span><span class="p">,</span> <span class="nx">goal</span><span class="p">,</span> <span class="nx">path</span><span class="p">.</span><span class="nx">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">));</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    
+<span class="p">};</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-11" id="section-11">&#182;</a>
+</div>
+<p>OK, so let's do this</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="nx">startTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
+<span class="nx">solution</span> <span class="o">=</span> <span class="nx">findPath</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span> <span class="nx">goal</span><span class="p">,</span> <span class="p">[]);</span>
+<span class="nx">endTime</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">();</span>
+
+
+</pre></div>
+        </td>
+      </tr>
+      <tr>
+        <td class="docs">
+<div class="pilwrap">
+  <a class="pilcrow" href="#section-12" id="section-12">&#182;</a>
+</div>
+<p>Now let's see the solution, how long it took, and how many iterations we ran</p>
+        </td>
+        <td class="code highlight"><div class="highlight"><pre>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;took &#39;</span><span class="o">+</span><span class="nx">iterations</span><span class="o">+</span><span class="s1">&#39; iterations and &#39;</span><span class="o">+</span><span class="p">(</span><span class="nx">endTime</span><span class="o">-</span><span class="nx">startTime</span><span class="p">).</span><span class="nx">toString</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39; milliseconds&#39;</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">solution</span><span class="p">);</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;---------&#39;</span><span class="p">);</span>
+
+
+<span class="p">}());</span>
+</pre></div>
+        </td>
+      </tr>
+  </tbody>
+</table>
+  </div>
+</body>
+</html>
