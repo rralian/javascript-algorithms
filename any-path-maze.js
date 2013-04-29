@@ -1,9 +1,10 @@
 /**
- * A mostly reasonable (but not optimal) approach to finding a path through
- * a grid with passable and non-passable nodes using recursion. On each pass,
- * we check whether we're at the solution (and if it's best), and if not whether
- * this was the best path to this node. If so, we pass each possible next step
- * back into the function.
+ * This algorithm is probably what you would do if you were put into a maze
+ * with no knowledge of its size or arrangement. Just pick right each time
+ * and mark each square you pass. If you hit a dead-end, back up until you
+ * find an unexplored option and go down that path. When you're out, you're
+ * out. Technically this isnt' always turning **right** specifically, but
+ * it's close enough.
  */
 
 (function(){
@@ -27,7 +28,7 @@ var grid = [
 
 var start = [0,0],
     goal = [3,4],
-    fromStart = {}, // object to keep track of best path to a node, as '0,3': 4
+    visited = [], // array to keep track of visited nodes
     solution = false,
     iterations = 0, // track each pass through the function
     startTime,
@@ -64,33 +65,24 @@ var findPath = function(node, goal, path){
     
     iterations++;
     
-    var posStr = node.toString(),
+    var nodeStr = node.toString(),
         stepStr,
         step,
         validSteps,
         i,
-        stepLength;
+        stepLength,
+        result;
+    
+    // if we've already tried this node, skip this
+    if(visited.indexOf(nodeStr)>-1) return false;
 
     // add node to the local path
     path.push(node);
-    
-    // if we have a better way to this node, stop looking in this branch
-    if(typeof fromStart[posStr] !=='undefined' && fromStart[posStr] <= path.length) {
-        return;
-    }
-    
-    fromStart[posStr] = path.length;
+    visited.push(nodeStr);
 
-    // are we at the solution?
-    if(posStr===goal.toString()){
-        
-        // if it's better than what we have, save it
-        if (!solution || path.length < solution.length) {
-            solution = path;
-        }
-        return;
-    }
-    
+    // are we at the solution? Oh good, return it.
+    if(nodeStr===goal.toString()) return path;
+
     // get all valid steps from current node
     validSteps = getValidSteps(node);
     
@@ -104,15 +96,22 @@ var findPath = function(node, goal, path){
         hence the `.slice(0)`.
          */
         step = validSteps[i];
-        findPath(step, goal, path.slice(0));
+        result = findPath(step, goal, path.slice(0));
+        /*
+        Did the recursed function call return a solution? If so
+        return it.
+         */
+        if(result) return result;
 
     }
+    // if we haven't found a path at this point, one must not exist, return false
+    return false;
     
 };
 
 // OK, so let's do this
 startTime = new Date().getTime();
-findPath(start, goal, []);
+solution = findPath(start, goal, []);
 endTime = new Date().getTime();
 
 // Now let's see the solution, how long it took, and how many iterations we ran
